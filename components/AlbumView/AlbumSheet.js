@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import {StyleSheet, View, Image, Animated, Easing} from 'react-native';
 import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
 import {ImagePropTypes} from 'deprecated-react-native-prop-types'
-import Theme from 'teaset/themes/Theme';
+import Theme from '@react-native-ohos/teaset/themes/Theme';
 import TransformView from '../TransformView/TransformView';
 
 export default class AlbumSheet extends TransformView {

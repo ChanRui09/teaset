@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import ReactNative, {StyleSheet, Animated, View, PanResponder, Platform} from 'react-native';
 import {ViewPropTypes} from 'deprecated-react-native-prop-types'
 
-import Theme from 'teaset/themes/Theme';
+import Theme from '@react-native-ohos/teaset/themes/Theme';
 import KeyboardSpace from '../KeyboardSpace/KeyboardSpace';
 
 export default class OverlayView extends Component {

@@ -6,7 +6,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {StyleSheet, View, Text, Animated} from 'react-native';
 
-import Theme from 'teaset/themes/Theme';
+import Theme from '@react-native-ohos/teaset/themes/Theme';
 
 import TouchableOpacity from './TouchableOpacity';
 

@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import {StyleSheet, View, Text, TextInput, Image, LayoutAnimation} from 'react-native';
 import {ViewPropTypes,TextInputPropTypes} from 'deprecated-react-native-prop-types'
 
-import Theme from 'teaset/themes/Theme';
+import Theme from '@react-native-ohos/teaset/themes/Theme';
 
 export default class SearchInput extends Component {
 

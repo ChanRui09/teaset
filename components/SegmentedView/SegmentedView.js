@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import {View} from 'react-native';
 import {ViewPropTypes} from 'deprecated-react-native-prop-types'
 
-import Theme from 'teaset/themes/Theme';
+import Theme from '@react-native-ohos/teaset/themes/Theme';
 import SegmentedSheet from './SegmentedSheet';
 import SegmentedBar from '../SegmentedBar/SegmentedBar';
 import Projector from '../Projector/Projector';

@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import ReactNative, {Platform, View} from 'react-native';
 import {ViewPropTypes} from 'deprecated-react-native-prop-types'
 
-import Theme from 'teaset/themes/Theme';
+import Theme from '@react-native-ohos/teaset/themes/Theme';
 import NavigatorContext from '../TeaNavigator/NavigatorContext';
 import TeaNavigator from '../TeaNavigator/TeaNavigator';
 import KeyboardSpace from '../KeyboardSpace/KeyboardSpace';

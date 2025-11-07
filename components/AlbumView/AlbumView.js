@@ -8,7 +8,7 @@ import {StyleSheet, View, Image, Animated} from 'react-native';
 import {ViewPropTypes, ImagePropTypes} from 'deprecated-react-native-prop-types'
 import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
 
-import Theme from 'teaset/themes/Theme';
+import Theme from '@react-native-ohos/teaset/themes/Theme';
 import AlbumSheet from './AlbumSheet';
 import CarouselControl from '../Carousel/CarouselControl';
 

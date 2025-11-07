@@ -6,7 +6,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {View, Text} from 'react-native';
 import {ViewPropTypes, TextPropTypes} from 'deprecated-react-native-prop-types'
-import Theme from 'teaset/themes/Theme';
+import Theme from '@react-native-ohos/teaset/themes/Theme';
 
 export default class SegmentedSheet extends Component {
   

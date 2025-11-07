@@ -6,7 +6,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {StyleSheet, Text, Image, TouchableOpacity} from 'react-native';
 import {TextPropTypes, ImagePropTypes} from 'deprecated-react-native-prop-types'
-import Theme from 'teaset/themes/Theme';
+import Theme from '@react-native-ohos/teaset/themes/Theme';
 
 export default class Checkbox extends Component {
   

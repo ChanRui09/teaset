@@ -6,7 +6,7 @@ import React, {Component, PureComponent} from "react";
 import {StyleSheet, AppRegistry, DeviceEventEmitter, View, Animated} from 'react-native';
 import PropTypes from 'prop-types';
 
-import Theme from 'teaset/themes/Theme';
+import Theme from '@react-native-ohos/teaset/themes/Theme';
 import TopViewContext from './TopViewContext';
 
 let keyValue = 0;

@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import {StyleSheet, View} from 'react-native';
 import {ViewPropTypes} from 'deprecated-react-native-prop-types'
 
-import Theme from 'teaset/themes/Theme';
+import Theme from '@react-native-ohos/teaset/themes/Theme';
 import TabSheet from './TabSheet';
 import TabButton from './TabButton';
 import Projector from '../Projector/Projector';

@@ -21,7 +21,7 @@ const IPHONE12_HEIGHT = 844;
 const {width: D_WIDTH, height: D_HEIGHT} = Dimensions.get('window');
 
 const { PlatformConstants = {} } = NativeModules;
-const { minor = 0 } = PlatformConstants.reactNativeVersion || {};
+const { minor = 0 } = PlatformConstants?.reactNativeVersion || {};
 
 const isIPhoneX = (() => {
   if (Platform.OS === 'web') return false;

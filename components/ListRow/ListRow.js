@@ -6,7 +6,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {StyleSheet, Text, View, Image} from 'react-native';
 import {TextPropTypes} from 'deprecated-react-native-prop-types'
-import Theme from 'teaset/themes/Theme';
+import Theme from '@react-native-ohos/teaset/themes/Theme';
 import Label from '../Label/Label';
 import SwipeTouchableOpacity from './SwipeTouchableOpacity';
 import SwipeActionButton from './SwipeActionButton';

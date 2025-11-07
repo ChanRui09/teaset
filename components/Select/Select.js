@@ -6,7 +6,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {StyleSheet, View, TouchableOpacity, Image, Text, ScrollView} from 'react-native';
 import {TextPropTypes} from 'deprecated-react-native-prop-types'
-import Theme from 'teaset/themes/Theme';
+import Theme from '@react-native-ohos/teaset/themes/Theme';
 import PullPicker from '../PullPicker/PullPicker';
 import PopoverPicker from '../PopoverPicker/PopoverPicker';
 

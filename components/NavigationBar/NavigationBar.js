@@ -8,7 +8,7 @@ import {StyleSheet, Platform, StatusBar, View, Animated, Dimensions} from 'react
 import {ViewPropTypes, TextPropTypes} from 'deprecated-react-native-prop-types'
 import {NavigationContext} from '@react-navigation/native';
 
-import Theme from 'teaset/themes/Theme';
+import Theme from '@react-native-ohos/teaset/themes/Theme';
 import TintColorContext from './TintColorContext';
 import NavigationTitle from './NavigationTitle';
 import NavigationButton from './NavigationButton';

@@ -6,7 +6,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {Text} from 'react-native';
 
-import Theme from 'teaset/themes/Theme';
+import Theme from '@react-native-ohos/teaset/themes/Theme';
 import TintColorContext from './TintColorContext';
 
 export default class NavigationTitle extends Component {

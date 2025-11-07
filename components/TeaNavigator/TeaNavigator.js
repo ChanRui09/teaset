@@ -14,7 +14,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import TeaNavigatorScene from './TeaNavigatorScene';
 import NavigatorContext from './NavigatorContext';
-import Theme from 'teaset/themes/Theme';
+import Theme from '@react-native-ohos/teaset/themes/Theme';
 import StatusBarConfigContext from './StatusBarConfigContext';
 
 const Stack = createNativeStackNavigator();
