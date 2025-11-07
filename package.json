@@ -1,6 +1,6 @@
 {
   "name": "@react-native-ohos/teaset",
-  "version": "0.7.6-rc.1",
+  "version": "0.7.6-rc.2",
   "description": "A UI library for react native.",
   "main": "index.js",
   "publishConfig": {
