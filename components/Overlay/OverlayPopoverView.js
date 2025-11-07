@@ -4,7 +4,7 @@
 
 import React, {Component} from "react";
 import PropTypes from 'prop-types';
-import {View, Dimensions, Platform, StatusBar} from 'react-native';
+import {View, Dimensions, Platform, StatusBar, Keyboard} from 'react-native';
 
 import OverlayView from './OverlayView';
 import Popover from '../Popover/Popover';
@@ -44,8 +44,21 @@ export default class OverlayPopoverView extends OverlayView {
       fromBounds: props.fromBounds,
       popoverWidth: null,
       popoverHeight: null,
+      keyboardHeight: 0,
     });
     this.defaultDirectionInsets = 0;
+    this.keyboardShowListener = null;
+    this.keyboardHideListener = null;
+  }
+
+  componentDidMount() {
+    super.componentDidMount && super.componentDidMount();
+    this.updateKeyboardListeners(this.props.autoKeyboardInsets);
+  }
+
+  componentWillUnmount() {
+    this.updateKeyboardListeners(false);
+    super.componentWillUnmount && super.componentWillUnmount();
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -53,14 +66,58 @@ export default class OverlayPopoverView extends OverlayView {
     if (JSON.stringify(this.props.fromBounds) !== JSON.stringify(this.state.fromBounds)) {
       this.setState({fromBounds: this.props.fromBounds});
     }
+    if (prevProps.autoKeyboardInsets !== this.props.autoKeyboardInsets) {
+      this.updateKeyboardListeners(this.props.autoKeyboardInsets);
+      if (!this.props.autoKeyboardInsets && this.state.keyboardHeight !== 0) {
+        this.setState({keyboardHeight: 0});
+      }
+    }
   }
 
   updateFromBounds(bounds) {
     this.setState({fromBounds: bounds});
   }
 
+  updateKeyboardListeners(shouldListen) {
+    if (shouldListen) {
+      if (!this.keyboardShowListener) {
+        const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+        this.keyboardShowListener = Keyboard.addListener(showEvent, e => this.onKeyboardShow(e));
+      }
+      if (!this.keyboardHideListener) {
+        const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+        this.keyboardHideListener = Keyboard.addListener(hideEvent, () => this.onKeyboardHide());
+      }
+    } else {
+      if (this.keyboardShowListener) {
+        this.keyboardShowListener.remove();
+        this.keyboardShowListener = null;
+      }
+      if (this.keyboardHideListener) {
+        this.keyboardHideListener.remove();
+        this.keyboardHideListener = null;
+      }
+    }
+  }
+
+  onKeyboardShow(e) {
+    if (!this.props.autoKeyboardInsets || !e || !e.endCoordinates) return;
+    const {height = 0} = e.endCoordinates;
+    if (height !== this.state.keyboardHeight) {
+      this.setState({keyboardHeight: height});
+    }
+  }
+
+  onKeyboardHide() {
+    if (this.state.keyboardHeight !== 0) {
+      this.setState({keyboardHeight: 0});
+    }
+  }
+
   onPopoverLayout(e) {
-    if (Platform.OS === 'android' && (this.state.popoverWidth !== null || this.state.popoverHeight != null)) {
+    // Prevent multiple layout calls on Android and HarmonyOS platforms
+    if ((Platform.OS === 'android' || Platform.OS === 'harmony') && 
+        (this.state.popoverWidth !== null || this.state.popoverHeight !== null)) {
       //android calls many times...
       return;
     }
@@ -87,8 +144,15 @@ export default class OverlayPopoverView extends OverlayView {
       return {popoverStyle, arrow};
     }
 
-    let screenWidth = Dimensions.get('window').width;
-    let screenHeight = Dimensions.get('window').height;
+    let windowMetrics = Dimensions.get('window');
+    let screenWidth = windowMetrics.width;
+    let screenHeight = windowMetrics.height;
+    let availableHeight = screenHeight;
+    if (this.props.autoKeyboardInsets && this.state.keyboardHeight) {
+      const keyboardInset = this.state.keyboardHeight;
+      const tentativeHeight = screenHeight - keyboardInset;
+      availableHeight = tentativeHeight > 0 ? tentativeHeight : screenHeight;
+    }
     let {x, y, width, height} = fromBounds ? fromBounds : {};
 
     if (!x && x !== 0) x = screenWidth / 2;
@@ -109,10 +173,10 @@ export default class OverlayPopoverView extends OverlayView {
         if (autoDirection && x + width + pw <= screenWidth && x < pw) direction = 'right';
         break;
       case 'up':
-        if (autoDirection && y + height + ph <= screenHeight && y < ph) direction = 'down';
+        if (autoDirection && y + height + ph <= availableHeight && y < ph) direction = 'down';
         break;
       default:
-        if (autoDirection && y + height + ph > screenHeight && y >= ph) direction = 'up';
+        if (autoDirection && y + height + ph > availableHeight && y >= ph) direction = 'up';
         break;
     }
 
@@ -164,6 +228,16 @@ export default class OverlayPopoverView extends OverlayView {
           py = y - alignInsets;
           arrow += 'Top';
           break;
+      }
+    }
+
+    if (this.props.autoKeyboardInsets && this.state.keyboardHeight) {
+      const effectiveBottom = availableHeight - popoverHeight;
+      if (typeof py === 'number') {
+        if (py > effectiveBottom) {
+          py = effectiveBottom;
+        }
+        if (py < 0) py = 0;
       }
     }
 

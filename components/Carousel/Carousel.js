@@ -47,6 +47,7 @@ export default class Carousel extends Component {
 
   constructor(props) {
     super(props);
+    this.scrollViewRef = React.createRef();
     this.state = {
       width: 0,
       height: 0,
@@ -140,10 +141,10 @@ export default class Carousel extends Component {
     let {width, height} = this.state;
     if (cardIndex < 0) cardIndex = 0;
     else if (cardIndex >= this.cardCount) cardIndex = this.cardCount - 1;
-    if (this.refs.scrollView) {
+    if (this.scrollViewRef.current) {
       if (this.props.horizontal)
-        this.refs.scrollView.scrollTo({x: width * cardIndex, y: 0, animated: animated});
-      else this.refs.scrollView.scrollTo({x: 0, y: height * cardIndex, animated: animated});      
+        this.scrollViewRef.current.scrollTo({x: width * cardIndex, y: 0, animated: animated});
+      else this.scrollViewRef.current.scrollTo({x: 0, y: height * cardIndex, animated: animated});      
     }
   }
 
@@ -169,12 +170,13 @@ export default class Carousel extends Component {
     let {width} = this.state;
     let {x} = e.nativeEvent.contentOffset;
     let cardIndex =  Math.round(x / width);
+    let epsilon = Math.max(width * 0.01, 1); // allow small floating point drift
 
     if (this.cycle) {
-      if (cardIndex <= 0 && x <= 0) {
+      if (cardIndex <= 0 && x <= epsilon) {
         cardIndex = this.cardCount - 2;
         this.scrollToCard(cardIndex, false);
-      } else if (cardIndex >= this.cardCount - 1 && x >= (this.cardCount - 1) * width) {
+      } else if (cardIndex >= this.cardCount - 1 && x >= (this.cardCount - 1) * width - epsilon) {
         cardIndex = 1;
         this.scrollToCard(cardIndex, false);
       }
@@ -189,12 +191,13 @@ export default class Carousel extends Component {
     let {height} = this.state;
     let {y} = e.nativeEvent.contentOffset;
     let cardIndex =  Math.round(y / height);
+    let epsilon = Math.max(height * 0.01, 1); // allow small floating point drift
 
     if (this.cycle) {
-      if (cardIndex <= 0 && y <= 0) {
+      if (cardIndex <= 0 && y <= epsilon) {
         cardIndex = this.cardCount - 2;
         this.scrollToCard(cardIndex, false);
-      } else if (cardIndex >= this.cardCount - 1 && y >= (this.cardCount - 1) * height) {
+      } else if (cardIndex >= this.cardCount - 1 && y >= (this.cardCount - 1) * height - epsilon) {
         cardIndex = 1;
         this.scrollToCard(cardIndex, false);
       }
@@ -261,7 +264,7 @@ export default class Carousel extends Component {
           horizontal={horizontal}
           contentContainerStyle={contentContainerStyle}
           {...others}
-          ref='scrollView'
+          ref={this.scrollViewRef}
           onScroll={(e) => this.onScroll(e)}
           onLayout={(e) => this.onLayout(e)}
           >

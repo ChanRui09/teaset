@@ -2,9 +2,10 @@
 
 'use strict';
 
-import React, {Component} from 'react';
+import React, {Component, createRef} from 'react';
 import PropTypes from 'prop-types';
-import {StyleSheet, View, ViewPropTypes} from 'react-native';
+import {StyleSheet, View} from 'react-native';
+import {ViewPropTypes} from 'deprecated-react-native-prop-types'
 
 import Theme from 'teaset/themes/Theme';
 import TabSheet from './TabSheet';
@@ -35,6 +36,7 @@ export default class TabView extends Component {
     this.state = {
       activeIndex: this.props.activeIndex ? this.props.activeIndex : 0,
     };
+    this.carouselRef = createRef();
   }
 
   get sheets() {
@@ -118,7 +120,8 @@ export default class TabView extends Component {
                 onPress={e => {
                   if (type === 'sheet') {
                     this.setState({activeIndex: sheetIndex}, () => {
-                      this.refs.carousel && this.refs.carousel.scrollToPage(sheetIndex);                  
+                      const carousel = this.carouselRef.current;
+                      carousel && carousel.scrollToPage(sheetIndex);
                       onChange && onChange(sheetIndex);
                     });
                   }
@@ -148,7 +151,7 @@ export default class TabView extends Component {
         carousel={false}
         startIndex={this.activeIndex}
         cycle={false}
-        ref='carousel'
+        ref={this.carouselRef}
         onChange={index => {
           if (typeof index !== 'number') return;
           this.setState({activeIndex: index}, () => onChange && onChange(index));

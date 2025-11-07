@@ -5,7 +5,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {StyleSheet, Text, Image, TouchableOpacity} from 'react-native';
-
+import {TextPropTypes, ImagePropTypes} from 'deprecated-react-native-prop-types'
 import Theme from 'teaset/themes/Theme';
 
 export default class Checkbox extends Component {
@@ -15,11 +15,11 @@ export default class Checkbox extends Component {
     defaultChecked: PropTypes.bool,
     size: PropTypes.oneOf(['lg', 'md', 'sm']),
     title: PropTypes.oneOfType([PropTypes.element, PropTypes.string, PropTypes.number]),
-    titleStyle: Text.propTypes.style,
+    titleStyle: TextPropTypes.style,
     checkedIcon: PropTypes.oneOfType([PropTypes.element, PropTypes.shape({uri: PropTypes.string}), PropTypes.number]),
-    checkedIconStyle: Image.propTypes.style,
+    checkedIconStyle: ImagePropTypes.style,
     uncheckedIcon: PropTypes.oneOfType([PropTypes.element, PropTypes.shape({uri: PropTypes.string}), PropTypes.number]),
-    uncheckedIconStyle: Image.propTypes.style,
+    uncheckedIconStyle: ImagePropTypes.style,
     onChange: PropTypes.func,
   };
 

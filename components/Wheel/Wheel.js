@@ -4,7 +4,8 @@
 
 import React, {Component} from "react";
 import PropTypes from 'prop-types';
-import {StyleSheet, View, Text, Animated, PanResponder, ViewPropTypes} from 'react-native';
+import {StyleSheet, View, Text, Animated, PanResponder} from 'react-native';
+import {ViewPropTypes, TextPropTypes} from 'deprecated-react-native-prop-types'
 
 import Theme from 'teaset/themes/Theme';
 import WheelItem from './WheelItem';
@@ -14,7 +15,7 @@ export default class Wheel extends Component {
   static propTypes = {
     ...ViewPropTypes,
     items: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.element, PropTypes.string, PropTypes.number])).isRequired,
-    itemStyle: Text.propTypes.style,
+    itemStyle: TextPropTypes.style,
     holeStyle: ViewPropTypes.style, //height is required
     maskStyle: ViewPropTypes.style,
     holeLine: PropTypes.oneOfType([PropTypes.element, PropTypes.number]),
@@ -30,7 +31,7 @@ export default class Wheel extends Component {
   };
 
   static Item = WheelItem;
-  static preRenderCount = 10;
+  static preRenderCount = 5; // 减少预渲染数量以提高性能
 
   constructor(props) {
     super(props);
@@ -43,6 +44,7 @@ export default class Wheel extends Component {
     this.hiddenOffset = 0;
     this.currentPosition = new Animated.Value(0);
     this.targetPositionValue = null;
+    this.isLayoutReady = false; // 添加布局就绪标记
   }
 
   componentDidMount() {
@@ -60,7 +62,10 @@ export default class Wheel extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.index || this.props.index === 0) {
-      this.currentPosition.setValue(this.props.index * this.holeHeight);
+      // 只在布局就绪后更新位置
+      if (this.isLayoutReady && this.holeHeight > 0) {
+        this.currentPosition.setValue(this.props.index * this.holeHeight);
+      }
     }    
   }
 
@@ -165,9 +170,18 @@ export default class Wheel extends Component {
       let maskHeight = (height - holeHeight) / 2;
       this.hiddenOffset = Math.ceil(maskHeight / holeHeight) + this.constructor.preRenderCount;
     }
-    this.forceUpdate(() => {
-      this.currentPosition.setValue(this.index * holeHeight);
-    });
+    
+    // 只在首次布局或关键尺寸变化时更新
+    const needsUpdate = !this.isLayoutReady || this.holeHeight !== holeHeight;
+    this.isLayoutReady = true;
+    
+    if (needsUpdate) {
+      this.forceUpdate(() => {
+        if (this.holeHeight > 0) {
+          this.currentPosition.setValue(this.index * this.holeHeight);
+        }
+      });
+    }
   }
 
   onLayout(e) {

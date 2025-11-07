@@ -4,7 +4,8 @@
 
 import React, {Component} from "react";
 import PropTypes from 'prop-types';
-import {StyleSheet, View, Text, Animated, ViewPropTypes} from 'react-native';
+import {StyleSheet, View, Text, Animated} from 'react-native';
+import {ViewPropTypes} from 'deprecated-react-native-prop-types'
 
 import Theme from 'teaset/themes/Theme';
 
@@ -77,7 +78,8 @@ export default class WheelItem extends Component {
     let {itemHeight, wheelHeight, index} = this.props;
 
     if (!itemHeight || !wheelHeight) return;
-    if (this.lastPosition !== null && Math.abs(this.lastPosition - value) < 1) return;
+    // 提高阈值，减少不必要的更新
+    if (this.lastPosition !== null && Math.abs(this.lastPosition - value) < 0.5) return;
 
     let itemPosition = itemHeight * index;
     let halfItemHeight = itemHeight / 2;

@@ -19,11 +19,15 @@ export default class NavigationLinkButton extends NavigationButton {
   renderTitle() {
     let {title} = this.props;
     if (title === null || title === undefined) return super.renderTitle();
+    
+    const contextTintColor = this.context ? this.context.tintColor : undefined;
     let textStyle = {
-      color: this.context.tintColor,
       fontSize: Theme.navButtonFontSize,
       overflow: 'hidden',
     };
+    if (contextTintColor !== null && contextTintColor !== undefined) {
+      textStyle.color = contextTintColor;
+    }
     return <Text style={textStyle} numberOfLines={1} allowFontScaling={false}>{title}</Text>;
   }
 

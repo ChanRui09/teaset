@@ -5,6 +5,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {TouchableOpacity} from 'react-native';
+import TintColorContext from './TintColorContext';
 
 export default class NavigationButton extends Component {
 
@@ -15,9 +16,7 @@ export default class NavigationButton extends Component {
     hitSlop: {top: 12, bottom: 12, left: 8, right: 8},
   };
 
-  static contextTypes = {
-    tintColor: PropTypes.string,
-  };
+  static contextType = TintColorContext;
 
   buildStyle() {
     let {style} = this.props;

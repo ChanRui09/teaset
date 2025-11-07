@@ -4,9 +4,11 @@
 
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import ReactNative, {Platform, View, ViewPropTypes} from 'react-native';
+import ReactNative, {Platform, View} from 'react-native';
+import {ViewPropTypes} from 'deprecated-react-native-prop-types'
 
 import Theme from 'teaset/themes/Theme';
+import NavigatorContext from '../TeaNavigator/NavigatorContext';
 import TeaNavigator from '../TeaNavigator/TeaNavigator';
 import KeyboardSpace from '../KeyboardSpace/KeyboardSpace';
 
@@ -26,9 +28,7 @@ export default class BasePage extends Component {
     keyboardTopInsets: 0,
   };
 
-  static contextTypes = {
-    navigator: PropTypes.func,
-  };
+  static contextType = NavigatorContext;
 
   constructor(props) {
     super(props);
@@ -40,7 +40,7 @@ export default class BasePage extends Component {
 
   componentDidMount() {
     this.didMount = true;
-    if (!this.backListener && Platform.OS === 'android') {
+    if (!this.backListener && (Platform.OS === 'android' || Platform.OS === 'harmony')) {
       let BackHandler = ReactNative.BackHandler ? ReactNative.BackHandler : ReactNative.BackAndroid;
       this.backListener = BackHandler.addEventListener('hardwareBackPress', () => this.onHardwareBackPress());
     }
@@ -55,11 +55,11 @@ export default class BasePage extends Component {
   }
 
   get navigator() {
-    if (!this.context.navigator) {
+    if (!this.context) {
       console.error('The root component is NOT TeaNavigator, then you can not use BasePage.navigator.');
       return null;
     }
-    return this.context.navigator();
+    return this.context();
   }
 
   //Call after the scene transition by Navigator.onDidFocus
@@ -73,8 +73,8 @@ export default class BasePage extends Component {
 
   //Android hardware back key handler, default is pop to prev page
   onHardwareBackPress() {
-    if (!this.context.navigator) return false;
-    let navigator = this.context.navigator();
+    if (!this.context) return false;
+    let navigator = this.context();
     if (!navigator) return false;
     if (navigator.getCurrentRoutes().length > 1) {
       navigator.pop();

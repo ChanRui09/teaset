@@ -5,7 +5,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {Text, Image} from 'react-native';
-
+import {ImagePropTypes} from 'deprecated-react-native-prop-types'
 import Theme from 'teaset/themes/Theme';
 import NavigationButton from './NavigationButton';
 
@@ -16,7 +16,7 @@ export default class NavigationBackButton extends NavigationButton {
   static propTypes = {
     ...NavigationButton.propTypes,
     title: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    icon: Image.propTypes.source,
+    icon: ImagePropTypes.source,
   };
 
   static defaultProps = {
@@ -31,16 +31,19 @@ export default class NavigationBackButton extends NavigationButton {
   renderTitle() {
     let {title, icon} = this.props;
 
+    const contextTintColor = this.context ? this.context.tintColor : undefined;
     let textStyle = {
-      color: this.context.tintColor,
       fontSize: Theme.navButtonFontSize,
       overflow: 'hidden',
     };
     let iconStyle = {
-      tintColor: this.context.tintColor,
       width: 20,
       height: 20,
     };
+    if (contextTintColor !== null && contextTintColor !== undefined) {
+      textStyle.color = contextTintColor;
+      iconStyle.tintColor = contextTintColor;
+    }
     let elements = [
       <Image key={'icon'} style={iconStyle} source={icon} />,
       <Text key={'title'} style={textStyle} numberOfLines={1} allowFontScaling={false}>{title}</Text>,

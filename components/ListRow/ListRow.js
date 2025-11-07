@@ -5,7 +5,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {StyleSheet, Text, View, Image} from 'react-native';
-
+import {TextPropTypes} from 'deprecated-react-native-prop-types'
 import Theme from 'teaset/themes/Theme';
 import Label from '../Label/Label';
 import SwipeTouchableOpacity from './SwipeTouchableOpacity';
@@ -17,8 +17,8 @@ export default class ListRow extends Component {
     ...SwipeTouchableOpacity.propTypes,
     title: PropTypes.oneOfType([PropTypes.element, PropTypes.string, PropTypes.number]),
     detail: PropTypes.oneOfType([PropTypes.element, PropTypes.string, PropTypes.number]),
-    titleStyle: Text.propTypes.style,
-    detailStyle: Text.propTypes.style,
+    titleStyle: TextPropTypes.style,
+    detailStyle: TextPropTypes.style,
     detailMultiLine: PropTypes.bool, //是否支持多行内容
     icon: PropTypes.oneOfType([PropTypes.element, PropTypes.shape({uri: PropTypes.string}), PropTypes.number]),
     accessory: PropTypes.oneOfType([PropTypes.element, PropTypes.shape({uri: PropTypes.string}), PropTypes.number, PropTypes.oneOf(['none', 'auto', 'empty', 'check', 'indicator'])]),
@@ -41,6 +41,7 @@ export default class ListRow extends Component {
 
   constructor(props) {
     super(props);
+    this.containerViewRef = React.createRef();
     this.state = {
       swipeSts: 'none',
       swipeWidth: 0,
@@ -48,15 +49,15 @@ export default class ListRow extends Component {
   }
 
   measureInWindow(callback) {
-    this.refs.containerView && this.refs.containerView.measureInWindow(callback);
+    this.containerViewRef.current && this.containerViewRef.current.measureInWindow(callback);
   }
 
   measure(callback) {
-    this.refs.containerView && this.refs.containerView.measure(callback);
+    this.containerViewRef.current && this.containerViewRef.current.measure(callback);
   }
 
   closeSwipeActions() {
-    this.refs.containerView && this.refs.containerView.timingClose();
+    this.containerViewRef.current && this.containerViewRef.current.timingClose();
   }
 
   buildStyle() {
@@ -116,7 +117,7 @@ export default class ListRow extends Component {
         {swipeActions.map((item, index) => React.cloneElement(item, {
           key: item.key ? item.key : 'action' + index,
           onPress: () => {
-            this.refs.containerView && this.refs.containerView.timingClose();
+            this.containerViewRef.current && this.containerViewRef.current.timingClose();
             item.props.onPress && item.props.onPress();
           }
         }))}
@@ -228,7 +229,7 @@ export default class ListRow extends Component {
           swipeWidth={this.state.swipeWidth}
           onPress={onPress}
           onSwipeStsChange={swipeSts => this.setState({swipeSts})}
-          ref='containerView'
+          ref={this.containerViewRef}
         >
           {this.renderIcon()}
           {this.renderContent()}

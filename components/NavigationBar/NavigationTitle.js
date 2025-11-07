@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import {Text} from 'react-native';
 
 import Theme from 'teaset/themes/Theme';
+import TintColorContext from './TintColorContext';
 
 export default class NavigationTitle extends Component {
 
@@ -21,12 +22,15 @@ export default class NavigationTitle extends Component {
     allowFontScaling: false,
   };
 
-  static contextTypes = {
-    tintColor: PropTypes.string,
-  };
+  static contextType = TintColorContext;
 
   render() {
     let {style, text, children, ...others} = this.props;
+    
+    const contextTintColor = this.context ? this.context.tintColor : undefined;
+    const colorStyle = contextTintColor !== null && contextTintColor !== undefined 
+      ? {color: contextTintColor} 
+      : {};
 
     style = [{
       flex: 1,
@@ -34,9 +38,8 @@ export default class NavigationTitle extends Component {
       paddingRight: 4,
       textAlign: 'center',
       overflow: 'hidden',
-      color: this.context.tintColor,
       fontSize: Theme.navTitleFontSize,
-    }].concat(style);
+    }].concat(colorStyle).concat(style);
 
     return (
       <Text style={style} {...others}>

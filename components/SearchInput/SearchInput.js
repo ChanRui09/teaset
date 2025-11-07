@@ -4,7 +4,8 @@
 
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {StyleSheet, View, Text, TextInput, Image, LayoutAnimation, ViewPropTypes} from 'react-native';
+import {StyleSheet, View, Text, TextInput, Image, LayoutAnimation} from 'react-native';
+import {ViewPropTypes,TextInputPropTypes} from 'deprecated-react-native-prop-types'
 
 import Theme from 'teaset/themes/Theme';
 
@@ -13,7 +14,7 @@ export default class SearchInput extends Component {
   static propTypes = {
     ...TextInput.propTypes,
     style: ViewPropTypes.style,
-    inputStyle: TextInput.propTypes.style,
+    inputStyle: TextInputPropTypes.style,
     iconSize: PropTypes.number,
     disabled: PropTypes.bool,
   };
@@ -26,6 +27,7 @@ export default class SearchInput extends Component {
 
   constructor(props) {
     super(props);
+    this.textInputRef = React.createRef();
     this.state = {
       value: props.value === undefined ? props.defaultValue : props.value,
       editing: false,
@@ -53,19 +55,19 @@ export default class SearchInput extends Component {
   }
 
   focus() {
-    return this.refs.textInput && this.refs.textInput.focus();
+    return this.textInputRef.current && this.textInputRef.current.focus();
   }
 
   blur() {
-    return this.refs.textInput && this.refs.textInput.blur();
+    return this.textInputRef.current && this.textInputRef.current.blur();
   }
 
   isFocused() {
-    return this.refs.textInput && this.refs.textInput.isFocused();
+    return this.textInputRef.current && this.textInputRef.current.isFocused();
   }
 
   clear() {
-    return this.refs.textInput && this.refs.textInput.clear();
+    return this.textInputRef.current && this.textInputRef.current.clear();
   }
 
   onContainerLayout(e) {
@@ -152,7 +154,7 @@ export default class SearchInput extends Component {
             onChangeText={text => this.onChangeText(text)}
             selectionColor={this.state.selectionColor ? this.state.selectionColor : selectionColor}
             {...others}
-            ref='textInput'
+            ref={this.textInputRef}
             />
         </View>
       </View>

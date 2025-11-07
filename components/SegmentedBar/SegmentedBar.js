@@ -4,7 +4,8 @@
 
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {View, ScrollView, TouchableOpacity, Animated, ViewPropTypes} from 'react-native';
+import {View, ScrollView, TouchableOpacity, Animated} from 'react-native';
+import {ViewPropTypes} from 'deprecated-react-native-prop-types'
 
 import Theme from 'teaset/themes/Theme';
 import SegmentedItem from './SegmentedItem';
@@ -40,6 +41,7 @@ export default class SegmentedBar extends Component {
 
   constructor(props) {
     super(props);
+    this.scrollViewRef = React.createRef();
     this._activeIndex = this.props.activeIndex ? this.props.activeIndex : 0;
     this._buttonsLayout = this.makeArray([], props.children);
     this._itemsLayout = this.makeArray([], props.children);
@@ -56,9 +58,13 @@ export default class SegmentedBar extends Component {
       this._itemsLayout = nextItemsLayout;
       this._itemsAddWidth = this.makeArray(this._itemsAddWidth, this.props.children, 0);
     }
-    if (this.props.activeIndex || this.props.activeIndex === 0) {
+    
+    // 只有当 props.activeIndex 真正改变时才更新
+    if ((this.props.activeIndex || this.props.activeIndex === 0) &&
+        prevProps.activeIndex !== this.props.activeIndex) {
       this._activeIndex = this.props.activeIndex;
     }
+
     if (this._activeIndex >= nextItemsLayout.length) {
       this._activeIndex = nextItemsLayout.length - 1;
     }
@@ -85,7 +91,7 @@ export default class SegmentedBar extends Component {
       case 'itemWidth':
         return this._buttonsLayout[this._activeIndex].x + this._itemsLayout[this._activeIndex].x + this._itemsAddWidth[this._activeIndex] / 2;
       case 'customWidth':
-        const isMoreThanDefault = this.props.indicatorWidth > this._itemsLayout[this.activeIndex].width;
+        const isMoreThanDefault = this.props.indicatorWidth > this._itemsLayout[this._activeIndex].width;
         return isMoreThanDefault ?
           this._buttonsLayout[this._activeIndex].x + this._itemsLayout[this._activeIndex].x
           : this._buttonsLayout[this._activeIndex].x + (this._buttonsLayout[this._activeIndex].width - this.props.indicatorWidth) / 2;
@@ -96,12 +102,12 @@ export default class SegmentedBar extends Component {
   get indicatorWidthValue() {
     switch (this.props.indicatorType) {
       case 'boxWidth':
-        return this._buttonsLayout[this.activeIndex].width;
+        return this._buttonsLayout[this._activeIndex].width;
       case 'itemWidth':
-        return this._itemsLayout[this.activeIndex].width - this._itemsAddWidth[this._activeIndex];
+        return this._itemsLayout[this._activeIndex].width - this._itemsAddWidth[this._activeIndex];
       case 'customWidth':
-        const isMoreThanDefault = this.props.indicatorWidth > this._itemsLayout[this.activeIndex].width;
-        return isMoreThanDefault ? this._itemsLayout[this.activeIndex].width : this.props.indicatorWidth;
+        const isMoreThanDefault = this.props.indicatorWidth > this._itemsLayout[this._activeIndex].width;
+        return isMoreThanDefault ? this._itemsLayout[this._activeIndex].width : this.props.indicatorWidth;
     }
     return 0;
   }
@@ -147,7 +153,7 @@ export default class SegmentedBar extends Component {
       this._indicatorWidth.setValue(indicatorWidthValue);
     }
 
-    if (this.props.autoScroll && this.refs.scrollView) {
+    if (this.props.autoScroll && this.scrollViewRef.current) {
       let contextWidth = 0;
       this._buttonsLayout.map(item => contextWidth += item.width);
       let x = indicatorXValue + indicatorWidthValue / 2 - this._scrollViewWidth / 2;
@@ -156,7 +162,7 @@ export default class SegmentedBar extends Component {
       } else if (x > contextWidth - this._scrollViewWidth) {
         x = contextWidth - this._scrollViewWidth;
       }
-      this.refs.scrollView.scrollTo({x: x, y: 0, animated: this.props.animated});
+      this.scrollViewRef.current.scrollTo({x: x, y: 0, animated: this.props.animated});
     }
   }
 
@@ -191,8 +197,12 @@ export default class SegmentedBar extends Component {
 
   renderItem(item, index) {
     let saveOnLayout = item.props.onLayout;
+    // 使用 props.activeIndex 或内部 _activeIndex,确保状态同步
+    let currentActiveIndex = (this.props.activeIndex || this.props.activeIndex === 0) 
+      ? this.props.activeIndex 
+      : this._activeIndex;
     let newItem = React.cloneElement(item, {
-      active: index === this.activeIndex,
+      active: index === currentActiveIndex,
       onLayout: e => {
         this.onItemLayout(index, e);
         saveOnLayout && saveOnLayout(e);
@@ -272,13 +282,18 @@ export default class SegmentedBar extends Component {
         scrollsToTop={false}
         removeClippedSubviews={false}
         onLayout={e => this.onScrollViewLayout(e)}
-        ref='scrollView'
+        ref={this.scrollViewRef}
         {...others}
       >
         {children.map((item, index) => {
+          const touchableStyle = {
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingHorizontal: Theme.sbBtnPaddingLeft,
+          };
           return (
           <TouchableOpacity
-            style={{alignItems: 'center', justifyContent: 'center'}}
+            style={touchableStyle}
             key={index}
             onPress={() => this.onButtonPress(index)}
             onLayout={e => this.onButtonLayout(index, e)}

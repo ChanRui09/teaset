@@ -4,7 +4,8 @@
 
 import React, {Component} from "react";
 import PropTypes from 'prop-types';
-import {StyleSheet, View, Image, Animated, ViewPropTypes} from 'react-native';
+import {StyleSheet, View, Image, Animated} from 'react-native';
+import {ViewPropTypes, ImagePropTypes} from 'deprecated-react-native-prop-types'
 import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
 
 import Theme from 'teaset/themes/Theme';
@@ -15,8 +16,8 @@ export default class AlbumView extends Component {
 
   static propTypes = {
     ...ViewPropTypes,
-    images: PropTypes.arrayOf(Image.propTypes.source).isRequired,
-    thumbs: PropTypes.arrayOf(Image.propTypes.source),
+    images: PropTypes.arrayOf(ImagePropTypes.source).isRequired,
+    thumbs: PropTypes.arrayOf(ImagePropTypes.source),
     defaultIndex: PropTypes.number,
     index: PropTypes.number,
     maxScale: PropTypes.number,

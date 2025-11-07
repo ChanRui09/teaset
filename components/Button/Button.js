@@ -5,7 +5,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {StyleSheet, Text, TouchableOpacity} from 'react-native';
-
+import {TextPropTypes} from 'deprecated-react-native-prop-types'
 import Theme from 'teaset/themes/Theme';
 
 export default class Button extends Component {
@@ -14,7 +14,7 @@ export default class Button extends Component {
     type: PropTypes.oneOf(['default', 'primary', 'secondary', 'danger', 'link']),
     size: PropTypes.oneOf(['xl', 'lg', 'md', 'sm', 'xs']),
     title: PropTypes.oneOfType([PropTypes.element, PropTypes.string, PropTypes.number]),
-    titleStyle: Text.propTypes.style,
+    titleStyle: TextPropTypes.style,
   };
 
   static defaultProps = {
@@ -22,12 +22,17 @@ export default class Button extends Component {
     size: 'md',
   };
 
+  constructor(props) {
+    super(props);
+    this.touchableOpacityRef = React.createRef();
+  }
+
   measureInWindow(callback) {
-    this.refs.touchableOpacity && this.refs.touchableOpacity.measureInWindow(callback);
+    this.touchableOpacityRef.current && this.touchableOpacityRef.current.measureInWindow(callback);
   }
 
   measure(callback) {
-    this.refs.touchableOpacity && this.refs.touchableOpacity.measure(callback);
+    this.touchableOpacityRef.current && this.touchableOpacityRef.current.measure(callback);
   }
 
   buildStyle() {
@@ -138,7 +143,7 @@ export default class Button extends Component {
     style = this.buildStyle();
     if (disabled) activeOpacity = style.opacity;
     return (
-      <TouchableOpacity style={style} disabled={disabled} activeOpacity={activeOpacity} {...others} ref='touchableOpacity'>
+      <TouchableOpacity style={style} disabled={disabled} activeOpacity={activeOpacity} {...others} ref={this.touchableOpacityRef}>
         {this.renderTitle()}
       </TouchableOpacity>
     );

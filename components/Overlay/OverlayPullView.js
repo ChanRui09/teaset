@@ -4,7 +4,8 @@
 
 import React, {Component} from "react";
 import PropTypes from 'prop-types';
-import {Animated, View, ViewPropTypes} from 'react-native';
+import {Animated, View} from 'react-native';
+import {ViewPropTypes} from 'deprecated-react-native-prop-types'
 
 import Theme from '../../themes/Theme';
 import TopView from './TopView';
@@ -46,9 +47,9 @@ export default class OverlayPullView extends OverlayView {
   get appearAnimates() {
     let animates = super.appearAnimates;
     animates.push(
-      Animated.spring(this.state.marginValue, {
+      Animated.timing(this.state.marginValue, {
         toValue: 0,
-        friction: 9,
+        duration:180,
         useNativeDriver: false,
       })
     );
@@ -58,9 +59,9 @@ export default class OverlayPullView extends OverlayView {
   get disappearAnimates() {
     let animates = super.disappearAnimates;
     animates.push(
-      Animated.spring(this.state.marginValue, {
+      Animated.timing(this.state.marginValue, {
         toValue: this.marginSize,
-        friction: 9,
+        duration:180,
         useNativeDriver: false,
       })
     );

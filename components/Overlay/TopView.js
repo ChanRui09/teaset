@@ -7,6 +7,7 @@ import {StyleSheet, AppRegistry, DeviceEventEmitter, View, Animated} from 'react
 import PropTypes from 'prop-types';
 
 import Theme from 'teaset/themes/Theme';
+import TopViewContext from './TopViewContext';
 
 let keyValue = 0;
 
@@ -46,41 +47,15 @@ export default class TopView extends Component {
     this.handlers = [];
   }
 
-  static contextTypes = {
-    registerTopViewHandler: PropTypes.func,
-    unregisterTopViewHandler: PropTypes.func,
-  };
-
-  static childContextTypes = {
-    registerTopViewHandler: PropTypes.func,
-    unregisterTopViewHandler: PropTypes.func,
-  };
-
-  getChildContext() {
-    let {registerTopViewHandler, unregisterTopViewHandler} = this.context;
-    if (!registerTopViewHandler) {
-      registerTopViewHandler = handler => {
-        this.handlers.push(handler);
-      };
-      unregisterTopViewHandler = handler => {
-        for (let i = this.handlers.length - 1; i >= 0; --i) {
-          if (this.handlers[i] === handler) {
-            this.handlers.splice(i, 1);
-            return true;
-          }
-        }
-        return false;
-      }
-    }
-    return {registerTopViewHandler, unregisterTopViewHandler};
-  }
+  static contextType = TopViewContext;
 
   get handler() {
     return this.handlers.length > 0 ? this.handlers[this.handlers.length - 1] : this;
   }
 
   componentDidMount() {
-    let {registerTopViewHandler} = this.context;
+    const contextValue = this.context;
+    let {registerTopViewHandler} = contextValue || {};
     if (registerTopViewHandler) {
       registerTopViewHandler(this);
       return;
@@ -94,7 +69,8 @@ export default class TopView extends Component {
   }
 
   componentWillUnmount() {
-    let {unregisterTopViewHandler} = this.context;
+    const contextValue = this.context;
+    let {unregisterTopViewHandler} = contextValue || {};
     if (unregisterTopViewHandler) {
       unregisterTopViewHandler(this);
       return;
@@ -205,21 +181,42 @@ export default class TopView extends Component {
   render() {
     let {elements, translateX, translateY, scaleX, scaleY} = this.state;
     let transform = [{translateX}, {translateY}, {scaleX}, {scaleY}];
+    
+    const contextValue = this.context;
+    let {registerTopViewHandler, unregisterTopViewHandler} = contextValue || {};
+    if (!registerTopViewHandler) {
+      registerTopViewHandler = handler => {
+        this.handlers.push(handler);
+      };
+      unregisterTopViewHandler = handler => {
+        for (let i = this.handlers.length - 1; i >= 0; --i) {
+          if (this.handlers[i] === handler) {
+            this.handlers.splice(i, 1);
+            return true;
+          }
+        }
+        return false;
+      }
+    }
+    const providerValue = {registerTopViewHandler, unregisterTopViewHandler};
+    
     return (
-      <View style={{backgroundColor: Theme.screenColor, flex: 1}}>
-        <Animated.View style={{flex: 1, transform: transform}}>
-          <PureView>
-            {this.props.children}
-          </PureView>
-        </Animated.View>
-        {elements.map((item, index) => {
-          return (
-            <View key={'topView' + item.key} style={styles.overlay} pointerEvents='box-none'>
-              {item.element}
-            </View>
-          );
-        })}
-      </View>
+      <TopViewContext.Provider value={providerValue}>
+        <View style={{backgroundColor: Theme.screenColor, flex: 1}}>
+          <Animated.View style={{flex: 1, transform: transform}}>
+            <PureView>
+              {this.props.children}
+            </PureView>
+          </Animated.View>
+          {elements.map((item, index) => {
+            return (
+              <View key={'topView' + item.key} style={styles.overlay} pointerEvents='box-none'>
+                {item.element}
+              </View>
+            );
+          })}
+        </View>
+      </TopViewContext.Provider>
     );
   }
 

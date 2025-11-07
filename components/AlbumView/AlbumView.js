@@ -4,7 +4,8 @@
 
 import React, {Component} from "react";
 import PropTypes from 'prop-types';
-import {StyleSheet, View, Image, Animated, ViewPropTypes} from 'react-native';
+import {StyleSheet, View, Image, Animated} from 'react-native';
+import {ViewPropTypes, ImagePropTypes} from 'deprecated-react-native-prop-types'
 import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
 
 import Theme from 'teaset/themes/Theme';
@@ -15,8 +16,8 @@ export default class AlbumView extends Component {
 
   static propTypes = {
     ...ViewPropTypes,
-    images: PropTypes.arrayOf(PropTypes.oneOfType([Image.propTypes.source, PropTypes.element])).isRequired,
-    thumbs: PropTypes.arrayOf(Image.propTypes.source),
+    images: PropTypes.arrayOf(PropTypes.oneOfType([ImagePropTypes.source, PropTypes.element])).isRequired,
+    thumbs: PropTypes.arrayOf(ImagePropTypes.source),
     defaultIndex: PropTypes.number,
     index: PropTypes.number,
     maxScale: PropTypes.number,
@@ -44,6 +45,7 @@ export default class AlbumView extends Component {
 
   constructor(props) {
     super(props);
+    this.sheetRefs = {};
     this.animateActions = [];
     this.layout = {x: 0, y: 0, width: 0, height: 0};
     let index = props.index || props.index === 0 ? props.index : props.defaultIndex;
@@ -69,8 +71,8 @@ export default class AlbumView extends Component {
     this.props.onWillChange && this.props.onWillChange(index, newIndex);
     this.setState({index: newIndex});
 
-    let sheet = this.refs['sheet' + index];
-    let nextSheet = this.refs['sheet' + newIndex];
+    let sheet = this.sheetRefs['sheet' + index];
+    let nextSheet = this.sheetRefs['sheet' + newIndex];
     let toPosition = newIndex > index ? 'left' : 'right';
 
     this.animateActions = [];
@@ -102,7 +104,7 @@ export default class AlbumView extends Component {
     let {images} = this.props;
     let {index} = this.state;
 
-    let {x, y, width, height} = this.refs['sheet' + index].contentLayout;
+    let {x, y, width, height} = this.sheetRefs['sheet' + index].contentLayout;
     let ltx = translateX, rtx = translateX;
     if (width > this.layout.width) {
       ltx = x;
@@ -113,8 +115,8 @@ export default class AlbumView extends Component {
     if ((ltx < triggerWidth && rtx > -triggerWidth)
       || (ltx >= triggerWidth && index === 0)
       || (rtx <= -triggerWidth && index === images.length - 1)) {
-      index > 0 && this.refs['sheet' + (index - 1)].scrollX(0, true);
-      index < (images.length - 1) && this.refs['sheet' + (index + 1)].scrollX(0, true);
+      index > 0 && this.sheetRefs['sheet' + (index - 1)].scrollX(0, true);
+      index < (images.length - 1) && this.sheetRefs['sheet' + (index + 1)].scrollX(0, true);
       return true;
     }
 
@@ -137,15 +139,15 @@ export default class AlbumView extends Component {
 
     let {images} = this.props;
     let {index} = this.state;
-    let {x, y, width, height} = this.refs['sheet' + index].contentLayout;
+    let {x, y, width, height} = this.sheetRefs['sheet' + index].contentLayout;
     let ltx = translateX, rtx = translateX;
     if (width > this.layout.width) {
       ltx = x;
       rtx = x + (width - this.layout.width);
     }
 
-    index > 0 && this.refs['sheet' + (index - 1)].scrollX(ltx, false);
-    index < (images.length - 1) && this.refs['sheet' + (index + 1)].scrollX(rtx, false);
+    index > 0 && this.sheetRefs['sheet' + (index - 1)].scrollX(ltx, false);
+    index < (images.length - 1) && this.sheetRefs['sheet' + (index + 1)].scrollX(rtx, false);
   }
 
   onWillInertialMove(translateX, translateY, newX, newY) {
@@ -185,7 +187,7 @@ export default class AlbumView extends Component {
         onWillLoadImage={() => onWillLoadImage && onWillLoadImage(index)}
         onLoadImageSuccess={(width, height) => onLoadImageSuccess && onLoadImageSuccess(index, width, height)}
         onLoadImageFailure={error => onLoadImageFailure && onLoadImageFailure(index, error)}
-        ref={'sheet' + index}
+        ref={ref => this.sheetRefs['sheet' + index] = ref}
         key={'sheet' + index}
         />
     );

@@ -5,7 +5,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {StyleSheet, View, TouchableOpacity, Image, Text, ScrollView} from 'react-native';
-
+import {TextPropTypes} from 'deprecated-react-native-prop-types'
 import Theme from 'teaset/themes/Theme';
 import PullPicker from '../PullPicker/PullPicker';
 import PopoverPicker from '../PopoverPicker/PopoverPicker';
@@ -16,7 +16,7 @@ export default class Select extends Component {
     ...TouchableOpacity.propTypes,
     size: PropTypes.oneOf(['lg', 'md', 'sm']),
     value: PropTypes.any,
-    valueStyle: Text.propTypes.style,
+    valueStyle: TextPropTypes.style,
     items: PropTypes.array,
     getItemValue: PropTypes.func, //(item, index) 选择项值，item=items[index]，为空时直接使用item
     getItemText: PropTypes.func, //(item, index) return display text of item, item=items[index], use item when it's null
@@ -38,12 +38,24 @@ export default class Select extends Component {
     pickerType: 'auto',
   };
 
+  constructor(props) {
+    super(props);
+    this.selectViewRef = React.createRef();
+  }
+
+  componentWillUnmount() {
+    if (this.pickerKey) {
+      PullPicker.hide(this.pickerKey);
+      this.pickerKey = null;
+    }
+  }
+
   measureInWindow(callback) {
-    this.refs.selectView && this.refs.selectView.measureInWindow(callback);
+    this.selectViewRef.current && this.selectViewRef.current.measureInWindow(callback);
   }
 
   measure(callback) {
-    this.refs.selectView && this.refs.selectView.measure(callback);
+    this.selectViewRef.current && this.selectViewRef.current.measure(callback);
   }
 
   get selectedIndex() {
@@ -132,7 +144,7 @@ export default class Select extends Component {
 
   showPullPicker() {
     let {pickerTitle, items, getItemText, onSelected} = this.props;
-    PullPicker.show(
+    this.pickerKey = PullPicker.show(
       pickerTitle,
       items,
       this.selectedIndex,
@@ -144,7 +156,7 @@ export default class Select extends Component {
   showPopoverPicker() {
     this.measure((x, y, width, height, pageX, pageY) => {
       let {items, getItemText, onSelected} = this.props;
-      PopoverPicker.show(
+      this.pickerKey = PopoverPicker.show(
         {x: pageX, y: pageY, width, height},
         items,
         this.selectedIndex,
@@ -248,7 +260,7 @@ export default class Select extends Component {
           onLayout && onLayout(e);
         }}
         {...others}
-        ref='selectView'
+        ref={this.selectViewRef}
       >
         {this.renderValue()}
         {this.renderIcon()}

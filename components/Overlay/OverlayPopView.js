@@ -4,7 +4,8 @@
 
 import React, {Component} from "react";
 import PropTypes from 'prop-types';
-import {Animated, View, ViewPropTypes} from 'react-native';
+import {Animated, View} from 'react-native';
+import {ViewPropTypes} from 'deprecated-react-native-prop-types'
 
 import OverlayView from './OverlayView';
 
@@ -43,7 +44,7 @@ export default class OverlayPopView extends OverlayView {
 
   get appearAnimates() {
     let animates = super.appearAnimates;
-    let duration = 200;
+    let duration = 180;
     animates = animates.concat([
       Animated.timing(this.state.opacity, {
         toValue: 1,

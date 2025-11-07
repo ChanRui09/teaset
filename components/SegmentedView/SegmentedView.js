@@ -4,7 +4,8 @@
 
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {View, ViewPropTypes} from 'react-native';
+import {View} from 'react-native';
+import {ViewPropTypes} from 'deprecated-react-native-prop-types'
 
 import Theme from 'teaset/themes/Theme';
 import SegmentedSheet from './SegmentedSheet';
@@ -20,11 +21,12 @@ export default class SegmentedView extends Component {
     barPosition: PropTypes.oneOf(['top', 'bottom']),
     //SegmentedBar
     barStyle: ViewPropTypes.style,
-    justifyItem: PropTypes.oneOf(['fixed', 'scrollable']),
-    indicatorType: PropTypes.oneOf(['none', 'boxWidth', 'itemWidth']),
+  justifyItem: PropTypes.oneOf(['fixed', 'scrollable']),
+  indicatorType: PropTypes.oneOf(['none', 'boxWidth', 'itemWidth', 'customWidth']),
     indicatorPosition: PropTypes.oneOf(['top', 'bottom']),
     indicatorLineColor: PropTypes.string,
     indicatorLineWidth: PropTypes.number,
+  indicatorWidth: PropTypes.number,
     indicatorPositionPadding: PropTypes.number,
     animated: PropTypes.bool,
     autoScroll: PropTypes.bool,
@@ -45,11 +47,12 @@ export default class SegmentedView extends Component {
     this.state = {
       activeIndex: this.props.activeIndex ? this.props.activeIndex : 0,
     };
+    this.carouselRef = React.createRef();
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.activeIndex != this.props.activeIndex && this.refs.carousel) {
-      this.refs.carousel.scrollToPage(this.props.activeIndex);
+    if (prevProps.activeIndex != this.props.activeIndex && this.carouselRef.current) {
+      this.carouselRef.current.scrollToPage(this.props.activeIndex);
     }
   }
 
@@ -81,8 +84,8 @@ export default class SegmentedView extends Component {
   onSegmentedBarChange(index) {
     if (index == this.activeIndex) return;
     this.setState({activeIndex: index}, () => {
-      if (this.refs.carousel) {
-        this.refs.carousel.scrollToPage(index, false);
+      if (this.carouselRef.current) {
+        this.carouselRef.current.scrollToPage(index, false);
       }
       this.props.onChange && this.props.onChange(index);
     });
@@ -96,7 +99,7 @@ export default class SegmentedView extends Component {
   }
 
   renderBar() {
-    let {barPosition, barStyle, justifyItem, indicatorType, indicatorPosition, indicatorLineColor, indicatorLineWidth, indicatorPositionPadding, animated, autoScroll, onChange} = this.props;
+  let {barPosition, barStyle, justifyItem, indicatorType, indicatorPosition, indicatorLineColor, indicatorLineWidth, indicatorWidth, indicatorPositionPadding, animated, autoScroll, onChange} = this.props;
 
     if (!indicatorPosition && barPosition == 'bottom') {
       indicatorPosition = 'top';
@@ -111,6 +114,7 @@ export default class SegmentedView extends Component {
           indicatorPosition={indicatorPosition}
           indicatorLineColor={indicatorLineColor}
           indicatorLineWidth={indicatorLineWidth}
+          indicatorWidth={indicatorWidth}
           indicatorPositionPadding={indicatorPositionPadding}
           animated={animated}
           autoScroll={autoScroll}
@@ -146,7 +150,7 @@ export default class SegmentedView extends Component {
         carousel={false}
         startIndex={this.activeIndex}
         cycle={false}
-        ref='carousel'
+        ref={this.carouselRef}
         onChange={index => this.onCarouselChange(index)}
       >
         {this.sheets}
@@ -155,7 +159,7 @@ export default class SegmentedView extends Component {
   }
 
   render() {
-    let {style, children, type, barPosition, barStyle, justifyItem, indicatorType, indicatorPosition, indicatorLineColor, indicatorLineWidth, indicatorPositionPadding, animated, autoScroll, activeIndex, onChange, ...others} = this.props;
+  let {style, children, type, barPosition, barStyle, justifyItem, indicatorType, indicatorPosition, indicatorLineColor, indicatorLineWidth, indicatorWidth, indicatorPositionPadding, animated, autoScroll, activeIndex, onChange, ...others} = this.props;
     return (
       <View style={this.buildStyle()} {...others}>
         {barPosition === 'top' ? this.renderBar() : null}

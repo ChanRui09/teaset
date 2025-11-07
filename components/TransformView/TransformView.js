@@ -2,9 +2,10 @@
 
 'use strict';
 
-import React, {Component} from "react";
+import React, {Component, createRef} from "react";
 import PropTypes from 'prop-types';
-import {StyleSheet, View, Animated, Easing, PanResponder, ViewPropTypes} from 'react-native';
+import {StyleSheet, View, Animated, Easing, PanResponder} from 'react-native';
+import {ViewPropTypes} from 'deprecated-react-native-prop-types'
 
 import Theme from 'teaset/themes/Theme';
 
@@ -39,6 +40,8 @@ export default class TransformView extends Component {
   constructor(props) {
     super(props);
     this.createPanResponder();
+    this.viewRef = createRef();
+    this.containerRef = createRef();
     this.prevTouches = [];
     this.viewLayout = {x: 0, y: 0, width: 0, height: 0};
     this.initContentLayout = {x: 0, y: 0, width: 0, height: 0};
@@ -47,6 +50,13 @@ export default class TransformView extends Component {
       translateY: new Animated.Value(0),
       scale: new Animated.Value(1),
     };
+  }
+
+  componentDidUpdate(prevProps) {
+    let {minScale, maxScale} = this.props;
+    if (minScale !== prevProps.minScale || maxScale !== prevProps.maxScale) {
+      this.handleMagnetic();
+    }
   }
 
   get contentLayout() {
@@ -217,10 +227,12 @@ export default class TransformView extends Component {
     if (distance0 && distance1) {
       let scaleRate = distance1 / distance0;
 
-      let {maxScale} = this.props;
+      let {maxScale, minScale} = this.props;
       let {scale} = this.state;
-      if (scale._value * scaleRate > maxScale) {
+      if (typeof maxScale === 'number' && scale._value * scaleRate > maxScale) {
         scaleRate = maxScale / scale._value;
+      } else if (typeof minScale === 'number' && scale._value * scaleRate < minScale) {
+        scaleRate = minScale / scale._value;
       }
 
       // unused code
@@ -313,8 +325,8 @@ export default class TransformView extends Component {
 
     }
     if (newScale === null) {
-      if (scale._value > maxScale) newScale = maxScale;
-      else if (scale._value < minScale) newScale = minScale;
+  if (typeof maxScale === 'number' && scale._value > maxScale) newScale = maxScale;
+  else if (typeof minScale === 'number' && scale._value < minScale) newScale = minScale;
     }
 
     let animates = [];
@@ -401,12 +413,12 @@ export default class TransformView extends Component {
         {...others}
         style={this.buildStyle()}
         onLayout={e => this.onLayout(e)}
-        ref='view'
+        ref={this.viewRef}
         {...this.panResponder.panHandlers}
       >
         <Animated.View
           style={this.buildContainerStyle()}
-          ref='containerView'
+          ref={this.containerRef}
           onLayout={e => {
             this.initContentLayout = e.nativeEvent.layout;
           }}

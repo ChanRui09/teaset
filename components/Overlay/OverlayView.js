@@ -4,7 +4,8 @@
 
 import React, {Component} from "react";
 import PropTypes from 'prop-types';
-import ReactNative, {StyleSheet, Animated, View, PanResponder, Platform, ViewPropTypes} from 'react-native';
+import ReactNative, {StyleSheet, Animated, View, PanResponder, Platform} from 'react-native';
+import {ViewPropTypes} from 'deprecated-react-native-prop-types'
 
 import Theme from 'teaset/themes/Theme';
 import KeyboardSpace from '../KeyboardSpace/KeyboardSpace';
@@ -76,7 +77,7 @@ export default class OverlayView extends Component {
   }
 
   get appearAnimates() {
-    let duration = 200;
+    let duration = 180;
     let animates = [
       Animated.timing(this.state.overlayOpacity, {
         toValue: this.overlayOpacity,
@@ -88,7 +89,7 @@ export default class OverlayView extends Component {
   }
   
   get disappearAnimates() {
-    let duration = 200;
+    let duration = 180;
     let animates = [
       Animated.timing(this.state.overlayOpacity, {
         toValue: 0,
