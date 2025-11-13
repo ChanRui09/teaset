@@ -194,8 +194,8 @@ class NavigationBarInner extends Component {
 
     let justifyContent;
     let platformType = type === 'auto' ? Platform.OS : type;
-    // Map harmony platform to android style
-    if (platformType === 'harmony') platformType = 'android';
+    // Map harmony platform to ios style
+    if (platformType === 'harmony') platformType = 'ios';
     switch (platformType) {
       case 'ios': justifyContent = 'space-between'; break;
       case 'android': justifyContent = 'flex-end'; break;
@@ -303,8 +303,8 @@ class NavigationBarInner extends Component {
     let barPaddingRight = fs.paddingRight ? fs.paddingRight : (fs.padding ? fs.padding : 0);
     let paddingLeft, paddingRight;
     let platformType = type === 'auto' ? Platform.OS : type;
-    // Map harmony platform to android style
-    if (platformType === 'harmony') platformType = 'android';
+    // Map harmony platform to ios style
+    if (platformType === 'harmony') platformType = 'ios';
     switch (platformType) {
       case 'ios':
         let paddingLeftRight = Math.max(leftViewWidth + barPaddingLeft, rightViewWidth + barPaddingRight);
@@ -335,8 +335,8 @@ class NavigationBarInner extends Component {
     if (typeof title === 'string') {
       let textAlign;
       let platformType = type === 'auto' ? Platform.OS : type;
-      // Map harmony platform to android style
-      if (platformType === 'harmony') platformType = 'android';
+      // Map harmony platform to ios style
+      if (platformType === 'harmony') platformType = 'ios';
       switch (platformType) {
         case 'ios': textAlign = 'center'; break;
         case 'android': textAlign = 'left'; break;
