@@ -83,6 +83,8 @@ const Theme = {
     } else if (Platform.OS === 'android') {
       if (Platform.Version > 20) return StatusBar.currentHeight; //translucent StatusBar is required
       return 0;
+    } else if (Platform.OS === 'harmony') {
+      return StatusBar.currentHeight; 
     }
     return this.isLandscape ? 0 : 20;
   },
