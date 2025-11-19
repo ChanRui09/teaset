@@ -85,10 +85,13 @@ export default class SegmentedItem extends Component {
         count={badge}
         onLayout={e => {
           let {width} = e.nativeEvent.layout;
-          if (width != this.state.badgeWidth) {
-            this.setState({badgeWidth: width});
-            onAddWidth && onAddWidth(width);
+          // 对测量结果取整
+          const normalizedWidth = Math.round(width);
+          if (normalizedWidth === this.state.badgeWidth) {
+            return;
           }
+          this.setState({badgeWidth: normalizedWidth});
+          onAddWidth && onAddWidth(normalizedWidth);
         }}/>
     );
   }
