@@ -33,7 +33,6 @@ export default class SearchInput extends Component {
       editing: false,
       width: null,
       placeholderWidth: null,
-      selectionColor: null,
     };
   }
 
@@ -79,9 +78,8 @@ export default class SearchInput extends Component {
   }
 
   onInputFocus() {
-    this.setState({editing: true, selectionColor: 'rgba(0, 0, 0, 0)'});
+    this.setState({editing: true});
     this.props.onFocus && this.props.onFocus();
-    setTimeout(() => this.setState({selectionColor: null}), 500);
   }
 
   onInputBlur() {
@@ -152,7 +150,7 @@ export default class SearchInput extends Component {
             onBlur={() => this.onInputBlur()}
             onFocus={() => this.onInputFocus()}
             onChangeText={text => this.onChangeText(text)}
-            selectionColor={this.state.selectionColor ? this.state.selectionColor : selectionColor}
+            selectionColor={selectionColor}
             {...others}
             ref={this.textInputRef}
             />
