@@ -4,12 +4,14 @@
 
 import React, {Component} from "react";
 import PropTypes from 'prop-types';
-import {Animated, View} from 'react-native';
+import {Animated, View, Platform} from 'react-native';
 import {ViewPropTypes} from 'deprecated-react-native-prop-types'
 
 import Theme from '../../themes/Theme';
 import TopView from './TopView';
 import OverlayView from './OverlayView';
+
+const useHarmonyDriver = Platform.OS === 'harmony';
 
 export default class OverlayPullView extends OverlayView {
 
@@ -39,7 +41,7 @@ export default class OverlayPullView extends OverlayView {
     super(props);
     this.viewLayout = {x: 0, y: 0, width: 0, height: 0};
     Object.assign(this.state, {
-      marginValue: new Animated.Value(0),
+      translateValue: new Animated.Value(0),
       showed: false,
     });
   }
@@ -47,10 +49,10 @@ export default class OverlayPullView extends OverlayView {
   get appearAnimates() {
     let animates = super.appearAnimates;
     animates.push(
-      Animated.timing(this.state.marginValue, {
+      Animated.timing(this.state.translateValue, {
         toValue: 0,
         duration:180,
-        useNativeDriver: false,
+        useNativeDriver: useHarmonyDriver,
       })
     );
     return animates;
@@ -59,10 +61,10 @@ export default class OverlayPullView extends OverlayView {
   get disappearAnimates() {
     let animates = super.disappearAnimates;
     animates.push(
-      Animated.timing(this.state.marginValue, {
-        toValue: this.marginSize,
+      Animated.timing(this.state.translateValue, {
+        toValue: this.translateHiddenValue,
         duration:180,
-        useNativeDriver: false,
+        useNativeDriver: useHarmonyDriver,
       })
     );
     return animates;
@@ -72,10 +74,13 @@ export default class OverlayPullView extends OverlayView {
     return false;
   }
 
-  get marginSize() {
+  get translateHiddenValue() {
     let {side} = this.props;
-    if (side === 'left' || side === 'right') return -this.viewLayout.width;
-    else return -this.viewLayout.height;
+    let {width, height} = this.viewLayout || {};
+    if (side === 'left') return -(width || 0);
+    if (side === 'right') return (width || 0);
+    if (side === 'top') return -(height || 0);
+    return (height || 0);
   }
 
   get rootTransformValue() {
@@ -102,7 +107,9 @@ export default class OverlayPullView extends OverlayView {
 
   appear(animated = this.props.animated) {
     if (animated) {
-      this.state.marginValue.setValue(this.marginSize);
+      this.state.translateValue.setValue(this.translateHiddenValue);
+    } else {
+      this.state.translateValue.setValue(0);
     }
     super.appear(animated);
 
@@ -152,24 +159,23 @@ export default class OverlayPullView extends OverlayView {
   renderContent(content = null) {
     let {side, containerStyle, children} = this.props;
 
-    let contentStyle;
+    let translateStyle;
     switch (side) {
       case 'top':
-        contentStyle = {marginTop: this.state.marginValue};
+      case 'bottom':
+        translateStyle = {transform: [{translateY: this.state.translateValue}]};
         break;
       case 'left':
-        contentStyle = {marginLeft: this.state.marginValue};
-        break;
       case 'right':
-        contentStyle = {marginRight: this.state.marginValue};
+        translateStyle = {transform: [{translateX: this.state.translateValue}]};
         break;
       default:
-        contentStyle = {marginBottom: this.state.marginValue};
+        translateStyle = {transform: [{translateY: this.state.translateValue}]};
     }
-    contentStyle.opacity = this.state.showed ? 1 : 0;
+    let visibilityStyle = {opacity: this.state.showed ? 1 : 0};
     containerStyle = [{
       backgroundColor: Theme.defaultColor,
-    }].concat(containerStyle).concat(contentStyle);
+    }].concat(containerStyle).concat([visibilityStyle, translateStyle]);
 
     return (
       <Animated.View style={containerStyle} onLayout={(e) => this.onLayout(e)}>

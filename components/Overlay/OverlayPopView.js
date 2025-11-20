@@ -4,10 +4,12 @@
 
 import React, {Component} from "react";
 import PropTypes from 'prop-types';
-import {Animated, View} from 'react-native';
+import {Animated, View, Platform} from 'react-native';
 import {ViewPropTypes} from 'deprecated-react-native-prop-types'
 
 import OverlayView from './OverlayView';
+
+const useHarmonyDriver = Platform.OS === 'harmony';
 
 export default class OverlayPopView extends OverlayView {
 
@@ -49,27 +51,27 @@ export default class OverlayPopView extends OverlayView {
       Animated.timing(this.state.opacity, {
         toValue: 1,
         duration,
-        useNativeDriver: false,
+        useNativeDriver: useHarmonyDriver,
       }),
       Animated.timing(this.state.translateX, {
         toValue: 0,
         duration,
-        useNativeDriver: false,
+        useNativeDriver: useHarmonyDriver,
       }),
       Animated.timing(this.state.translateY, {
         toValue: 0,
         duration,
-        useNativeDriver: false,
+        useNativeDriver: useHarmonyDriver,
       }),
       Animated.timing(this.state.scaleX, {
         toValue: 1,
         duration,
-        useNativeDriver: false,
+        useNativeDriver: useHarmonyDriver,
       }),
       Animated.timing(this.state.scaleY, {
         toValue: 1,
         duration,
-        useNativeDriver: false,
+        useNativeDriver: useHarmonyDriver,
       }),
     ]);
     return animates;
@@ -83,27 +85,27 @@ export default class OverlayPopView extends OverlayView {
       Animated.timing(this.state.opacity, {
         toValue: 0,
         duration,
-        useNativeDriver: false,
+        useNativeDriver: useHarmonyDriver,
       }),
       Animated.timing(this.state.translateX, {
         toValue: ft.translateX,
         duration,
-        useNativeDriver: false,
+        useNativeDriver: useHarmonyDriver,
       }),
       Animated.timing(this.state.translateY, {
         toValue: ft.translateY,
         duration,
-        useNativeDriver: false,
+        useNativeDriver: useHarmonyDriver,
       }),
       Animated.timing(this.state.scaleX, {
         toValue: ft.scaleX,
         duration,
-        useNativeDriver: false,
+        useNativeDriver: useHarmonyDriver,
       }),
       Animated.timing(this.state.scaleY, {
         toValue: ft.scaleY,
         duration,
-        useNativeDriver: false,
+        useNativeDriver: useHarmonyDriver,
       }),
     ]);
     return animates;
