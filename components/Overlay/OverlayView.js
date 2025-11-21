@@ -76,13 +76,17 @@ export default class OverlayView extends Component {
     return (overlayOpacity || overlayOpacity === 0) ? overlayOpacity : Theme.overlayOpacity;
   }
 
+  get useHarmonyDriver() {
+    return Platform.OS === 'harmony';
+  }
+
   get appearAnimates() {
     let duration = 180;
     let animates = [
       Animated.timing(this.state.overlayOpacity, {
         toValue: this.overlayOpacity,
         duration,
-        useNativeDriver: false,
+        useNativeDriver: this.useHarmonyDriver,
       })
     ];
     return animates;
@@ -94,7 +98,7 @@ export default class OverlayView extends Component {
       Animated.timing(this.state.overlayOpacity, {
         toValue: 0,
         duration,
-        useNativeDriver: false,
+        useNativeDriver: this.useHarmonyDriver,
       })
     ];
     return animates;
@@ -121,12 +125,14 @@ export default class OverlayView extends Component {
   disappear(animated = this.props.animated, additionAnimates = null) {
     if (animated) {
       Animated.parallel(this.disappearAnimates.concat(additionAnimates)).start(e => this.disappearCompleted());
-      this.state.overlayOpacity.addListener(e => {
-        if (e.value < 0.01) {
-          this.state.overlayOpacity.stopAnimation();
-          this.state.overlayOpacity.removeAllListeners();
-        }
-      });
+      if (!this.useHarmonyDriver) {
+        this.state.overlayOpacity.addListener(e => {
+          if (e.value < 0.01) {
+            this.state.overlayOpacity.stopAnimation();
+            this.state.overlayOpacity.removeAllListeners();
+          }
+        });
+      }
     } else {
       this.disappearCompleted();
     }

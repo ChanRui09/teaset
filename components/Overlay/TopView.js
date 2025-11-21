@@ -3,11 +3,13 @@
 'use strict';
 
 import React, {Component, PureComponent} from "react";
-import {StyleSheet, AppRegistry, DeviceEventEmitter, View, Animated} from 'react-native';
+import {StyleSheet, AppRegistry, DeviceEventEmitter, View, Animated, Platform} from 'react-native';
 import PropTypes from 'prop-types';
 
 import Theme from '@react-native-ohos/teaset/themes/Theme';
 import TopViewContext from './TopViewContext';
+
+const useHarmonyDriver = Platform.OS === 'harmony';
 
 let keyValue = 0;
 
@@ -124,19 +126,19 @@ export default class TopView extends Component {
     });
     if (animated) {
       let animates = [
-        Animated.spring(translateX, {toValue: tx, friction: 9, useNativeDriver: false}),
-        Animated.spring(translateY, {toValue: ty, friction: 9, useNativeDriver: false}),
-        Animated.spring(scaleX, {toValue: sx, friction: 9, useNativeDriver: false}),
-        Animated.spring(scaleY, {toValue: sy, friction: 9, useNativeDriver: false}),
+        Animated.spring(translateX, {toValue: tx, friction: 9, useNativeDriver: useHarmonyDriver}),
+        Animated.spring(translateY, {toValue: ty, friction: 9, useNativeDriver: useHarmonyDriver}),
+        Animated.spring(scaleX, {toValue: sx, friction: 9, useNativeDriver: useHarmonyDriver}),
+        Animated.spring(scaleY, {toValue: sy, friction: 9, useNativeDriver: useHarmonyDriver}),
       ];
       animatesOnly ? animatesOnly(animates) : Animated.parallel(animates).start();
     } else {
       if (animatesOnly) {
         let animates = [
-          Animated.timing(translateX, {toValue: tx, duration: 1, useNativeDriver: false}),
-          Animated.timing(translateY, {toValue: ty, duration: 1, useNativeDriver: false}),
-          Animated.timing(scaleX, {toValue: sx, duration: 1, useNativeDriver: false}),
-          Animated.timing(scaleY, {toValue: sy, duration: 1, useNativeDriver: false}),
+          Animated.timing(translateX, {toValue: tx, duration: 1, useNativeDriver: useHarmonyDriver}),
+          Animated.timing(translateY, {toValue: ty, duration: 1, useNativeDriver: useHarmonyDriver}),
+          Animated.timing(scaleX, {toValue: sx, duration: 1, useNativeDriver: useHarmonyDriver}),
+          Animated.timing(scaleY, {toValue: sy, duration: 1, useNativeDriver: useHarmonyDriver}),
         ];
         animatesOnly(animates);
       } else {
@@ -154,19 +156,19 @@ export default class TopView extends Component {
     let {animated, animatesOnly} = e;
     if (animated) {
       let animates = [
-        Animated.spring(translateX, {toValue: 0, friction: 9, useNativeDriver: false}),
-        Animated.spring(translateY, {toValue: 0, friction: 9, useNativeDriver: false}),
-        Animated.spring(scaleX, {toValue: 1, friction: 9, useNativeDriver: false}),
-        Animated.spring(scaleY, {toValue: 1, friction: 9, useNativeDriver: false}),
+        Animated.spring(translateX, {toValue: 0, friction: 9, useNativeDriver: useHarmonyDriver}),
+        Animated.spring(translateY, {toValue: 0, friction: 9, useNativeDriver: useHarmonyDriver}),
+        Animated.spring(scaleX, {toValue: 1, friction: 9, useNativeDriver: useHarmonyDriver}),
+        Animated.spring(scaleY, {toValue: 1, friction: 9, useNativeDriver: useHarmonyDriver}),
       ];
       animatesOnly ? animatesOnly(animates) : Animated.parallel(animates).start();
     } else {
       if (animatesOnly) {
         let animates = [
-          Animated.timing(translateX, {toValue: 0, duration: 1, useNativeDriver: false}),
-          Animated.timing(translateY, {toValue: 0, duration: 1, useNativeDriver: false}),
-          Animated.timing(scaleX, {toValue: 1, duration: 1, useNativeDriver: false}),
-          Animated.timing(scaleY, {toValue: 1, duration: 1, useNativeDriver: false}),
+          Animated.timing(translateX, {toValue: 0, duration: 1, useNativeDriver: useHarmonyDriver}),
+          Animated.timing(translateY, {toValue: 0, duration: 1, useNativeDriver: useHarmonyDriver}),
+          Animated.timing(scaleX, {toValue: 1, duration: 1, useNativeDriver: useHarmonyDriver}),
+          Animated.timing(scaleY, {toValue: 1, duration: 1, useNativeDriver: useHarmonyDriver}),
         ];
         animatesOnly(animates);
       } else {
