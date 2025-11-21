@@ -32,6 +32,43 @@ export default class SegmentedItem extends Component {
     this.state = {
       badgeWidth: 0,
     };
+    this.customBadgeMeasured = false;
+  }
+
+  componentDidUpdate(prevProps) {
+    const prevIsElement = React.isValidElement(prevProps.badge);
+    const currIsElement = React.isValidElement(this.props.badge);
+
+    if (!this.props.badge) {
+      this.customBadgeMeasured = false;
+      this.updateBadgeWidth(0);
+      return;
+    }
+
+    if (prevIsElement !== currIsElement) {
+      this.customBadgeMeasured = false;
+      if (!currIsElement) {
+        this.updateBadgeWidth(0);
+      }
+      return;
+    }
+
+    if (currIsElement && prevIsElement) {
+      const prevKey = prevProps.badge && prevProps.badge.key;
+      const currKey = this.props.badge && this.props.badge.key;
+      if (prevKey !== currKey) {
+        this.customBadgeMeasured = false;
+      }
+    }
+  }
+
+  updateBadgeWidth(width) {
+    const normalizedWidth = Math.round(width);
+    if (!Number.isFinite(normalizedWidth) || normalizedWidth === this.state.badgeWidth) {
+      return;
+    }
+    this.setState({badgeWidth: normalizedWidth});
+    this.props.onAddWidth && this.props.onAddWidth(normalizedWidth);
   }
 
   buildStyle() {
@@ -70,29 +107,41 @@ export default class SegmentedItem extends Component {
   }
 
   renderBadge() {
-    let {badge, onAddWidth} = this.props;
+    let {badge} = this.props;
     if (!badge) return null;
-    else if (React.isValidElement(badge)) return badge;
 
     let badgeStyle = {
       position: 'absolute',
       right: 0,
       top: 0,
     };
+
+    const handleLayout = e => {
+      let {width} = e.nativeEvent.layout;
+      this.updateBadgeWidth(width);
+    };
+
+    if (React.isValidElement(badge)) {
+      const needsMeasure = !this.customBadgeMeasured;
+      const elementLayoutProps = needsMeasure ? {
+        onLayout: e => {
+          this.customBadgeMeasured = true;
+          this.updateBadgeWidth(e.nativeEvent.layout.width);
+        }
+      } : {};
+      return (
+        <View style={badgeStyle} pointerEvents='none' {...elementLayoutProps}>
+          {badge}
+        </View>
+      );
+    }
+
     return (
       <Badge
         style={badgeStyle}
         count={badge}
-        onLayout={e => {
-          let {width} = e.nativeEvent.layout;
-          // 对测量结果取整
-          const normalizedWidth = Math.round(width);
-          if (normalizedWidth === this.state.badgeWidth) {
-            return;
-          }
-          this.setState({badgeWidth: normalizedWidth});
-          onAddWidth && onAddWidth(normalizedWidth);
-        }}/>
+        onLayout={handleLayout}
+      />
     );
   }
 

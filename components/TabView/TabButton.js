@@ -86,13 +86,18 @@ export default class TabButton extends Component {
 
   renderBadge() {
     let {badge} = this.props;
-    if (!badge || React.isValidElement(badge)) return badge;
+    if (!badge) return badge;
 
     let badgeStyle = {
       position: 'absolute',
       right: 0,
       top: 0,
     };
+
+    if (React.isValidElement(badge)) {
+      return <View style={badgeStyle}>{badge}</View>;
+    }
+
     return <Badge style={badgeStyle} count={badge} />;
   }
 
@@ -107,4 +112,3 @@ export default class TabButton extends Component {
     );
   }
 }
-
